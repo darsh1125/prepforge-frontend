@@ -58,11 +58,11 @@ src/
   types/api.ts    API-facing Appendix A types
 ```
 
-The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON, includes cookies (`credentials: "include"`) for future auth, and surfaces structured errors. Do not scatter raw `fetch` calls.
+The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON, includes cookies (`credentials: "include"`) for cross-origin auth, and surfaces structured errors. Do not scatter raw `fetch` calls.
 
 Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
 
-## Current implementation status (Prompt 10)
+## Current implementation status (Prompt 16)
 
 Implemented:
 
@@ -84,9 +84,9 @@ Implemented:
 - Explicit Save/Cancel controls; no API request is made per keystroke
 - Revision-aware builder refresh with conflict/error feedback and deterministic coverage/schedule state display
 
-Not implemented:
+Not implemented in the frontend:
 
-- Practice mode, regeneration, and final batch evaluator UI
+- The batch evaluator remains a backend-only CLI by design.
 
 Flashcards and schedules use separate protected API actions, while Generate Prep Kit starts the canonical backend pipeline. The detail page polls every two seconds during active generation, reconstructs state after refresh, renders aggregated warnings, and exposes retry after failure. Flashcard errors are shown without removing existing content; schedule errors preserve flashcards and prior kit data. The UI renders every returned schedule day, including repeated review days for long study windows.
 
@@ -101,3 +101,5 @@ Product flow: Create -> Generate -> Review/Edit -> Regenerate -> Practice -> Fol
 ## Deployment note
 
 Frontend and backend deploy on different origins. CORS on the backend must allow this frontend origin; cookies will require that setup. This app already sends credentials on API requests.
+
+For a production build, set `NEXT_PUBLIC_API_URL` to the backend origin without a trailing slash, run `npm ci`, `npm run build`, and start with `npm start`. The backend must be deployed separately with `WEB_ORIGIN` set to the exact frontend origin. Keep provider keys, database credentials, and session secrets in backend hosting environment settings only.
