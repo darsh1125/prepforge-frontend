@@ -73,10 +73,12 @@ Implemented:
 - Protected dashboard, kit creation, and kit detail pages
 - User-scoped kit creation, listing, viewing, and deletion UI
 - Kit detail research action with public interview source links, counts, and warning states
+- Kit detail role analysis with title, seniority, responsibilities, and labeled JD requirements
 
 Not implemented:
 
 - AI generation, crawling, extraction, and question creation
+- AI question generation and later full-kit stages
 - kit builder, regeneration, flashcard practice
 
 ## Deployment note

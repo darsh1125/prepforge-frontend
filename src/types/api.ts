@@ -111,6 +111,13 @@ export type KitRecord = {
   research?: {
     interview?: InterviewResearchResult;
   } | null;
+  extraction?: JDExtractionResult | null;
+};
+
+export type JDExtractionResult = {
+  role: { title: string; seniority: string; location: string; responsibilities: string[]; requirements: Requirement[] };
+  warnings: { code: string; message: string; recoverable: boolean }[];
+  metadata: { provider: string; model: string; attempts: number; extractedAt: string; jdChars: number };
 };
 
 export type InterviewResearchResult = {
