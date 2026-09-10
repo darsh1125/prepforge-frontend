@@ -13,15 +13,18 @@ import { humanStatus } from "@/lib/uiCopy";
 
 const activeStatuses = ["queued", "crawling_company", "researching_interview", "extracting_requirements", "generating_questions", "checking_coverage", "filling_gaps", "generating_flashcards", "building_schedule", "validating"];
 
+function isGenerationActive(kit: KitRecord): boolean {
+  return activeStatuses.includes(kit.status) && (kit.status !== "queued" || Boolean(kit.generation?.updatedAt));
+}
+
 function DetailContent() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [kit, setKit] = useState<KitRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const kitStatus = kit?.status;
   useEffect(() => { getKit(id).then((response) => setKit(response.kit)).catch((value) => setError(value instanceof ApiClientError ? value.message : "Could not load this kit.")); }, [id]);
-  useEffect(() => { if (!kitStatus || !activeStatuses.includes(kitStatus)) return undefined; const timer = window.setInterval(() => { getKit(id).then((response) => setKit(response.kit)).catch((value) => setError(value instanceof ApiClientError ? value.message : "Could not refresh generation status.")); }, 2000); return () => window.clearInterval(timer); }, [id, kitStatus]);
+  useEffect(() => { if (!kit || !isGenerationActive(kit)) return undefined; const timer = window.setInterval(() => { getKit(id).then((response) => setKit(response.kit)).catch((value) => setError(value instanceof ApiClientError ? value.message : "Could not refresh generation status.")); }, 2000); return () => window.clearInterval(timer); }, [id, kit]);
   if (error && !kit) return <div className="space-y-4"><p role="alert" className="text-red-700">{error}</p><Link href="/dashboard" className="underline">Back to dashboard</Link></div>;
   if (!kit) return <p className="text-sm text-slate-600">Loading kit...</p>;
   const currentKit = kit;
@@ -29,7 +32,7 @@ function DetailContent() {
   const role = currentKit.extraction?.role ?? currentKit.kit?.role;
   const coverage = currentKit.coverage ?? currentKit.kit?.coverage;
   const requirements = role?.requirements ?? [];
-  const active = activeStatuses.includes(kit.status);
+  const active = isGenerationActive(kit);
   function applyBuilder(response: BuilderResponse) { setKit((current) => current ? { ...current, revision: response.revision, questions: response.questions, questionMetadata: response.questionMetadata, flashcards: response.flashcards, flashcardMetadata: response.flashcardMetadata, coverage: response.coverage, schedule: response.schedule, derivedState: response.derivedState, companyBriefMeta: response.companyBriefMeta, kit: response.kit } : current); setError(null); }
   async function start() { setBusy("generate"); setError(null); try { const response = await generateKit(currentKit.id); setKit(response.kit); } catch (value) { setError(value instanceof ApiClientError ? value.message : "Could not start generation."); } finally { setBusy(null); } }
   async function remove() { setBusy("delete"); try { await deleteKit(currentKit.id); router.push("/dashboard"); } catch (value) { setError(value instanceof ApiClientError ? value.message : "Could not delete this kit."); } finally { setBusy(null); } }
