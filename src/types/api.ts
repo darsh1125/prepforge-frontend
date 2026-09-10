@@ -108,4 +108,14 @@ export type KitRecord = {
   kit: InterviewKit | null;
   createdAt: string;
   updatedAt: string;
+  research?: {
+    interview?: InterviewResearchResult;
+  } | null;
+};
+
+export type InterviewResearchResult = {
+  queries: string[];
+  sources: { sourceId: string; title: string; url: string; domain: string; sourceType: string; authority: string; snippet: string; relevanceScore: number }[];
+  warnings: { code: string; message: string; url?: string }[];
+  metadata: { sourceCount: number; successfulFetches: number; failedFetches: number };
 };

@@ -72,6 +72,7 @@ Implemented:
 - HTTP-only cookie auth with login, registration, logout, and session restoration
 - Protected dashboard, kit creation, and kit detail pages
 - User-scoped kit creation, listing, viewing, and deletion UI
+- Kit detail research action with public interview source links, counts, and warning states
 
 Not implemented:
 
