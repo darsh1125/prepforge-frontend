@@ -104,6 +104,7 @@ export type KitRecord = {
   input: CreateKitInput;
   status: string;
   progress: { stage: string; percent: number; message: string };
+  generation?: { status: string; stage: string; message?: string; percent?: number; attempt?: number; startedAt?: string; updatedAt?: string; completedAt?: string; error?: { code: string; message: string } | null } | null;
   warnings: { code: string; message: string }[];
   kit: InterviewKit | null;
   createdAt: string;

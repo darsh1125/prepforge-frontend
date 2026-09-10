@@ -10,3 +10,4 @@ export const extractKit = (id: string) => apiRequest<{ extraction: JDExtractionR
 export const generateQuestions = (id: string) => apiRequest<{ questions: GeneratedQuestion[]; warnings: { code: string; message: string }[]; coverage: CoverageResult }>(`/api/kits/${id}/generate/questions`, { method: "POST" });
 export const generateFlashcards = (id: string) => apiRequest<{ flashcards: Flashcard[]; warnings: { code: string; message: string }[] }>(`/api/kits/${id}/generate/flashcards`, { method: "POST" });
 export const generateSchedule = (id: string) => apiRequest<{ schedule: Schedule }>(`/api/kits/${id}/generate/schedule`, { method: "POST" });
+export const generateKit = (id: string) => apiRequest<{ kit: KitRecord }>(`/api/kits/${id}/generate`, { method: "POST" });
