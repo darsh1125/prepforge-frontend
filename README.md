@@ -94,6 +94,8 @@ Builder saves send one explicit mutation after the user confirms an edit. The ba
 
 Section regeneration controls are available beside the builder: company brief, each question category, and deterministic schedule rebuild. Confirmation copy explains that edited, pinned, and user-created questions survive category replacement. Regeneration shows a section-level loading state, keeps the prior UI until the server responds, surfaces provider or revision-conflict errors, and applies the returned coverage/schedule state without touching other categories. Schedule rebuild uses the revision-aware deterministic endpoint and does not invoke an LLM.
 
+Flashcard practice is available at `/kits/[id]/practice` and from the kit detail page. It presents one front at a time, reveals the answer on demand, then saves `Needs work`, `Getting there`, or `Confident` before advancing. Progress, practice stats, completion, empty state, requirement context, and keyboard shortcuts are included. A later session is rebuilt from persisted confidence, so weak and unpracticed cards appear first. The route uses session/local component state only for the current reveal/index; confidence history is persisted by the backend.
+
 ## Deployment note
 
 Frontend and backend deploy on different origins. CORS on the backend must allow this frontend origin; cookies will require that setup. This app already sends credentials on API requests.

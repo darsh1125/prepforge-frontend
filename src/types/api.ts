@@ -98,6 +98,10 @@ export type CreateKitInput = {
   days: number;
 };
 
+export type PracticeCard = Flashcard & { internalId: string; confidence: 1 | 2 | 3 | null; practiceCount: number; lastPracticedAt: string | null };
+export type PracticeStats = { total: number; practiced: number; unpracticed: number; lowConfidence: number; mediumConfidence: number; highConfidence: number };
+export type PracticeSession = { cards: PracticeCard[]; stats: PracticeStats };
+
 export type SafeUser = { id: string; email: string };
 export type KitRecord = {
   id: string;

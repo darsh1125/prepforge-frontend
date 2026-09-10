@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { CreateKitInput, KitRecord, JDExtractionResult, GeneratedQuestion, CoverageResult, Flashcard, Schedule } from "@/types/api";
+import type { CreateKitInput, KitRecord, JDExtractionResult, GeneratedQuestion, CoverageResult, Flashcard, Schedule, PracticeSession, PracticeCard } from "@/types/api";
 
 export const listKits = () => apiRequest<{ kits: KitRecord[] }>("/api/kits");
 export const getKit = (id: string) => apiRequest<{ kit: KitRecord }>(`/api/kits/${id}`);
@@ -25,3 +25,5 @@ export const pinFlashcard = (id: string, flashcardId: string, pinned: boolean, e
 export const regenerateCompanyBrief = (id: string, expectedRevision: number) => apiRequest<BuilderResponse>(`/api/kits/${id}/regenerate/company-brief`, { method: "POST", body: { expectedRevision } });
 export const regenerateQuestionCategory = (id: string, category: string, expectedRevision: number) => apiRequest<BuilderResponse>(`/api/kits/${id}/regenerate/questions/${category}`, { method: "POST", body: { expectedRevision } });
 export const regenerateSchedule = (id: string, expectedRevision: number) => apiRequest<BuilderResponse>(`/api/kits/${id}/regenerate/schedule`, { method: "POST", body: { expectedRevision } });
+export const getPracticeSession = (id: string) => apiRequest<PracticeSession>(`/api/kits/${id}/practice`);
+export const updatePracticeConfidence = (id: string, internalId: string, confidence: 1 | 2 | 3) => apiRequest<{ practice: Pick<PracticeCard, "internalId" | "confidence" | "practiceCount" | "lastPracticedAt"> }>(`/api/kits/${id}/practice/${encodeURIComponent(internalId)}`, { method: "PATCH", body: { confidence } });
