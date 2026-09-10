@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { RequireAuth } from "@/features/auth/RequireAuth";
 import { KitBuilder } from "@/features/kits/KitBuilder";
 import { ApiClientError } from "@/lib/api/client";
-import { deleteKit, extractKit, generateKit, generateQuestions, generateSchedule, getKit, researchInterview } from "@/lib/api/kits";
+import { deleteKit, extractKit, generateKit, generateQuestions, generateSchedule as legacyGenerateSchedule, getKit, regenerateSchedule, researchInterview } from "@/lib/api/kits";
 import type { BuilderResponse } from "@/lib/api/kits";
 import type { KitRecord } from "@/types/api";
 
@@ -24,6 +24,7 @@ function DetailContent() {
   if (error && !kit) return <div className="space-y-4"><p role="alert" className="text-red-700">{error}</p><Link href="/dashboard" className="underline">Back to dashboard</Link></div>;
   if (!kit) return <p className="text-sm text-slate-600">Loading kit...</p>;
   const currentKit = kit;
+  const generateSchedule = (kitId: string) => currentKit.schedule ? regenerateSchedule(kitId, currentKit.revision) : legacyGenerateSchedule(kitId);
   const role = currentKit.extraction?.role ?? currentKit.kit?.role;
   const coverage = currentKit.coverage ?? currentKit.kit?.coverage;
   const requirements = role?.requirements ?? [];

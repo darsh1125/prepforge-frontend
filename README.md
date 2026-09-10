@@ -92,6 +92,8 @@ Flashcards and schedules use separate protected API actions, while Generate Prep
 
 Builder saves send one explicit mutation after the user confirms an edit. The backend returns the complete updated builder state and revision, so the page replaces local state atomically and can recover after refresh.
 
+Section regeneration controls are available beside the builder: company brief, each question category, and deterministic schedule rebuild. Confirmation copy explains that edited, pinned, and user-created questions survive category replacement. Regeneration shows a section-level loading state, keeps the prior UI until the server responds, surfaces provider or revision-conflict errors, and applies the returned coverage/schedule state without touching other categories. Schedule rebuild uses the revision-aware deterministic endpoint and does not invoke an LLM.
+
 ## Deployment note
 
 Frontend and backend deploy on different origins. CORS on the backend must allow this frontend origin; cookies will require that setup. This app already sends credentials on API requests.
