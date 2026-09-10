@@ -1,7 +1,8 @@
 import { NewKitForm } from "@/features/kits/NewKitForm";
+import { RequireAuth } from "@/features/auth/RequireAuth";
 
 export default function NewKitPage() {
-  return (
+  return <RequireAuth>
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Create a kit</h1>
       <p className="text-slate-700">
@@ -10,5 +11,5 @@ export default function NewKitPage() {
       </p>
       <NewKitForm />
     </div>
-  );
+  </RequireAuth>;
 }

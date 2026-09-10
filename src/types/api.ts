@@ -97,3 +97,15 @@ export type CreateKitInput = {
   company_url: string;
   days: number;
 };
+
+export type SafeUser = { id: string; email: string };
+export type KitRecord = {
+  id: string;
+  input: CreateKitInput;
+  status: string;
+  progress: { stage: string; percent: number; message: string };
+  warnings: { code: string; message: string }[];
+  kit: InterviewKit | null;
+  createdAt: string;
+  updatedAt: string;
+};

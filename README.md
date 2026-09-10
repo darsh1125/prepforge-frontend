@@ -62,18 +62,21 @@ The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON
 
 Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
 
-## Current implementation status (Prompt 1)
+## Current implementation status (Prompt 2)
 
 Implemented:
 
-- App shell and placeholder pages
+- App shell with authenticated navigation
 - Typed API client + health check
 - Appendix A TypeScript types (API-facing copies)
+- HTTP-only cookie auth with login, registration, logout, and session restoration
+- Protected dashboard, kit creation, and kit detail pages
+- User-scoped kit creation, listing, viewing, and deletion UI
 
 Not implemented:
 
-- login / register / protected routes
-- kit generation UI, builder, regeneration, flashcard practice
+- AI generation, crawling, extraction, and question creation
+- kit builder, regeneration, flashcard practice
 
 ## Deployment note
 

@@ -8,7 +8,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
       <footer className="border-t border-slate-200 bg-white">
         <p className="mx-auto max-w-5xl px-4 py-4 text-sm text-slate-600">
-          PrepForge frontend. API lives in a separate backend repository.
+          PrepForge · interview preparation workspace
         </p>
       </footer>
     </div>
