@@ -112,6 +112,7 @@ export type KitRecord = {
     interview?: InterviewResearchResult;
   } | null;
   extraction?: JDExtractionResult | null;
+  questions: GeneratedQuestion[];
 };
 
 export type JDExtractionResult = {
@@ -119,6 +120,8 @@ export type JDExtractionResult = {
   warnings: { code: string; message: string; recoverable: boolean }[];
   metadata: { provider: string; model: string; attempts: number; extractedAt: string; jdChars: number };
 };
+
+export type GeneratedQuestion = { id: string; requirement_ids: string[]; category: "technical" | "behavioural" | "system-design" | "company-fit"; prompt: string; answer_outline: string; difficulty: number };
 
 export type InterviewResearchResult = {
   queries: string[];

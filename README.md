@@ -62,7 +62,7 @@ The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON
 
 Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
 
-## Current implementation status (Prompt 2)
+## Current implementation status (Prompt 6)
 
 Implemented:
 
@@ -74,12 +74,11 @@ Implemented:
 - User-scoped kit creation, listing, viewing, and deletion UI
 - Kit detail research action with public interview source links, counts, and warning states
 - Kit detail role analysis with title, seniority, responsibilities, and labeled JD requirements
+- Kit detail generated questions grouped by category with difficulty and requirement references
 
 Not implemented:
 
-- AI generation, crawling, extraction, and question creation
-- AI question generation and later full-kit stages
-- kit builder, regeneration, flashcard practice
+- Coverage loops, regeneration, flashcards, scheduling, and final kit stages
 
 ## Deployment note
 
