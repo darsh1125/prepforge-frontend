@@ -18,7 +18,7 @@ export function Header() {
   async function onLogout() { setLoggingOut(true); try { await logout(); router.replace("/login"); } finally { setLoggingOut(false); } }
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
             href="/"
@@ -26,10 +26,10 @@ export function Header() {
           >
             PrepForge
           </Link>
-          <p className="text-sm text-slate-600">AI-powered interview preparation</p>
+          <p className="text-sm text-slate-600">Your focused interview preparation workspace</p>
         </div>
         <nav aria-label="Primary">
-          <ul className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-1 sm:gap-2">
             {nav.filter((item) => item.href === "/" || user).map((item) => (
               <li key={item.href}>
                 <Link

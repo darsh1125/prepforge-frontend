@@ -1,5 +1,6 @@
 import { getPublicApiUrl } from "@/lib/env";
 import type { ApiErrorBody } from "@/types/api";
+import { humanError } from "@/lib/uiCopy";
 
 export class ApiClientError extends Error {
   readonly status: number;
@@ -75,14 +76,14 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       throw new ApiClientError(
         response.status,
         payload.error.code,
-        payload.error.message,
+        humanError(payload.error.code, payload.error.message),
         payload.error.details,
       );
     }
     throw new ApiClientError(
       response.status,
       "HTTP_ERROR",
-      `Request failed with status ${response.status}`,
+      response.status === 401 ? "Your session has expired. Please sign in again." : `Request failed with status ${response.status}`,
     );
   }
 

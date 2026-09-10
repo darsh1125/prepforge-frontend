@@ -96,6 +96,8 @@ Section regeneration controls are available beside the builder: company brief, e
 
 Flashcard practice is available at `/kits/[id]/practice` and from the kit detail page. It presents one front at a time, reveals the answer on demand, then saves `Needs work`, `Getting there`, or `Confident` before advancing. Progress, practice stats, completion, empty state, requirement context, and keyboard shortcuts are included. A later session is rebuilt from persisted confidence, so weak and unpracticed cards appear first. The route uses session/local component state only for the current reveal/index; confidence history is persisted by the backend.
 
+Product flow: Create -> Generate -> Review/Edit -> Regenerate -> Practice -> Follow the schedule. The interface uses human-readable generation stages and error copy, explicit empty/loading/error states, responsive layouts, and credentialed API requests. The backend remains the source of truth for ownership, revisions, practice history, coverage, and schedules.
+
 ## Deployment note
 
 Frontend and backend deploy on different origins. CORS on the backend must allow this frontend origin; cookies will require that setup. This app already sends credentials on API requests.

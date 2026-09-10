@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiClientError } from "@/lib/api/client";
 import { getKit, getPracticeSession, updatePracticeConfidence } from "@/lib/api/kits";
 import type { KitRecord, PracticeCard, PracticeSession } from "@/types/api";
@@ -22,17 +22,7 @@ export default function PracticePage() {
   const card: PracticeCard | undefined = session?.cards[index];
   const requirements = kit?.extraction?.role.requirements ?? kit?.kit?.role.requirements ?? [];
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      const target = event.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
-      if ((event.key === " " || event.key === "Enter") && card && !revealed) { event.preventDefault(); setRevealed(true); }
-      if (revealed && card && ["1", "2", "3"].includes(event.key)) { void rate(Number(event.key) as 1 | 2 | 3); }
-    }
-    window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown);
-  }, [card, revealed]);
-
-  async function rate(confidence: 1 | 2 | 3) {
+  const rate = useCallback(async (confidence: 1 | 2 | 3) => {
     if (!card || busy) return; setBusy(true); setError(null);
     try {
       const response = await updatePracticeConfidence(id, card.internalId, confidence);
@@ -41,7 +31,17 @@ export default function PracticePage() {
       setRevealed(false); setIndex((current) => current + 1);
     } catch (value) { setError(value instanceof ApiClientError ? value.message : "Could not save confidence. Try again."); }
     finally { setBusy(false); }
-  }
+  }, [busy, card, id, index]);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if ((event.key === " " || event.key === "Enter") && card && !revealed) { event.preventDefault(); setRevealed(true); }
+      if (revealed && card && ["1", "2", "3"].includes(event.key)) { void rate(Number(event.key) as 1 | 2 | 3); }
+    }
+    window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown);
+  }, [card, rate, revealed]);
 
   if (error && !session) return <div className="space-y-4"><p role="alert" className="text-red-700">{error}</p><Link href={`/kits/${id}`} className="underline">Back to kit</Link></div>;
   if (!session || !kit) return <p className="text-sm text-slate-600">Loading practice mode...</p>;
