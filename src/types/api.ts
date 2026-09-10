@@ -113,7 +113,10 @@ export type KitRecord = {
   } | null;
   extraction?: JDExtractionResult | null;
   questions: GeneratedQuestion[];
+  coverage?: CoverageResult | null;
 };
+
+export type CoverageResult = { uncovered_requirement_ids: string[]; passes: number };
 
 export type JDExtractionResult = {
   role: { title: string; seniority: string; location: string; responsibilities: string[]; requirements: Requirement[] };
