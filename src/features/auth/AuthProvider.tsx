@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => { queueMicrotask(() => { void refresh(); }); }, []);
 
   const value = useMemo<AuthContextValue>(() => ({
     user,

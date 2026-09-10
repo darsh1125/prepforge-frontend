@@ -62,7 +62,7 @@ The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON
 
 Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
 
-## Current implementation status (Prompt 6)
+## Current implementation status (Prompt 8)
 
 Implemented:
 
@@ -75,10 +75,15 @@ Implemented:
 - Kit detail research action with public interview source links, counts, and warning states
 - Kit detail role analysis with title, seniority, responsibilities, and labeled JD requirements
 - Kit detail generated questions grouped by category with difficulty and requirement references
+- Kit detail deterministic coverage display with uncovered requirement warnings and pass counts
+- Flashcard generation action and grounded flashcard display
+- Deterministic study schedule action with exact-day rendering, focus, minutes, and question IDs
 
 Not implemented:
 
-- Coverage loops, regeneration, flashcards, scheduling, and final kit stages
+- Full orchestration, builder editing, practice mode, and final kit stages
+
+Flashcards and schedules use separate protected API actions. Flashcard errors are shown without removing existing content; schedule errors preserve flashcards and prior kit data. The UI renders every returned schedule day, including repeated review days for long study windows.
 
 ## Deployment note
 

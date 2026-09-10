@@ -114,6 +114,8 @@ export type KitRecord = {
   extraction?: JDExtractionResult | null;
   questions: GeneratedQuestion[];
   coverage?: CoverageResult | null;
+  flashcards: Flashcard[];
+  schedule?: Schedule | null;
 };
 
 export type CoverageResult = { uncovered_requirement_ids: string[]; passes: number };
