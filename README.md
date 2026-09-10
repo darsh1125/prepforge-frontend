@@ -62,7 +62,7 @@ The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON
 
 Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
 
-## Current implementation status (Prompt 9)
+## Current implementation status (Prompt 10)
 
 Implemented:
 
@@ -80,12 +80,17 @@ Implemented:
 - Deterministic study schedule action with exact-day rendering, focus, minutes, and question IDs
 - One-click Generate Prep Kit action with staged progress and backend polling
 - Refresh-safe active generation state, warnings, failure messaging, and retry action
+- Local-draft Kit Builder for company brief, questions, flashcards, pinning, add/delete, category/difficulty/reference edits, and question reorder
+- Explicit Save/Cancel controls; no API request is made per keystroke
+- Revision-aware builder refresh with conflict/error feedback and deterministic coverage/schedule state display
 
 Not implemented:
 
-- Full orchestration, builder editing, practice mode, and final kit stages
+- Practice mode, regeneration, and final batch evaluator UI
 
 Flashcards and schedules use separate protected API actions, while Generate Prep Kit starts the canonical backend pipeline. The detail page polls every two seconds during active generation, reconstructs state after refresh, renders aggregated warnings, and exposes retry after failure. Flashcard errors are shown without removing existing content; schedule errors preserve flashcards and prior kit data. The UI renders every returned schedule day, including repeated review days for long study windows.
+
+Builder saves send one explicit mutation after the user confirms an edit. The backend returns the complete updated builder state and revision, so the page replaces local state atomically and can recover after refresh.
 
 ## Deployment note
 

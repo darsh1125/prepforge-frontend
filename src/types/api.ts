@@ -117,7 +117,14 @@ export type KitRecord = {
   coverage?: CoverageResult | null;
   flashcards: Flashcard[];
   schedule?: Schedule | null;
+  revision: number;
+  questionMetadata: EditorItemMetadata[];
+  flashcardMetadata: EditorItemMetadata[];
+  companyBriefMeta?: { summaryEdited?: boolean; whatTheyDoEdited?: boolean } | null;
+  derivedState?: { coverageStale: boolean; scheduleStale: boolean; updatedAt: string } | null;
 };
+
+export type EditorItemMetadata = { internalId?: string; id?: string; internalKey?: string; origin: "generated" | "user"; edited: boolean; pinned: boolean; order?: number };
 
 export type CoverageResult = { uncovered_requirement_ids: string[]; passes: number };
 
