@@ -1,105 +1,151 @@
 # PrepForge Frontend
 
-Web UI for **PrepForge**, an AI-powered interview preparation application.
+PrepForge is an AI interview-preparation workspace. A user supplies a job description, a company website, and the number of preparation days. The frontend sends those inputs to the separate backend and displays the generated preparation kit.
 
-This repository is the Next.js client only. The API, MongoDB, crawling, LLM orchestration, and the batch evaluator live in a **separate** repository:
+## Live Application
 
-https://github.com/darsh1125/prepforge-backend
+- Frontend: https://prepforge-frontend.netlify.app
+- Backend API: https://prepforge-backend-pha6.onrender.com
+- Frontend repository: https://github.com/darsh1125/prepforge-frontend
+- Backend repository: https://github.com/darsh1125/prepforge-backend
 
-Do not merge these projects into a monorepo.
+The frontend is hosted on Netlify. The API and database-backed generation pipeline are hosted separately.
 
 ## Technology
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
+The versions are defined in `package.json`:
 
-## Local setup
+- Next.js `16.3.4` with the App Router
+- React `19.2.8`
+- TypeScript `^5`
+- Tailwind CSS `^4`
+
+Next.js supplies routing and the production server, React supplies client state for interactive flows, TypeScript keeps API contracts explicit, and Tailwind provides responsive utility styling without putting backend concerns in the browser.
+
+## Features
+
+### Authentication
+
+- Registration, login, logout, and session restoration
+- HTTP-only cookie authentication through the backend
+- Protected dashboard, kit, builder, and practice routes
+- Redirect to `/login` when signed out; signed-in users entering `/` are sent to `/dashboard`
+
+### Kit workflow
+
+The UI supports:
+
+1. Creating a kit from a job description, company URL, and 1-60 preparation days.
+2. Starting the canonical generation pipeline.
+3. Viewing progress, warnings, partial research, failures, and retry actions.
+4. Viewing the company brief, extracted role and requirements, categorized questions, answer outlines, coverage, flashcards, and study schedule.
+5. Reopening and deleting owned kits from the dashboard.
+
+The detail page polls every two seconds during active generation, so a refresh can recover the server-owned progress state.
+
+### Builder and regeneration
+
+The protected builder provides explicit Save/Cancel editing for:
+
+- Company brief summary and `what_they_do`
+- Question prompt, answer outline, category, difficulty, and requirement references
+- Flashcard front, back, and requirement references
+- Adding and deleting questions and flashcards
+- Pinning items and reordering questions
+- Regenerating the company brief, an individual question category, or the deterministic schedule
+
+Mutations are sent only after an explicit action. The backend returns the updated revision and builder state; the frontend replaces its local state atomically. Revision conflicts and provider failures are shown as errors.
+
+Question and flashcard editor metadata is separate from the Appendix A-shaped kit data. The backend metadata uses `origin`, `edited`, `pinned`, `order`, and stable internal IDs. Regeneration preserves user-created, edited, and pinned questions; untouched generated items may be replaced.
+
+### Practice mode
+
+`/kits/[id]/practice` presents one flashcard at a time. The user can reveal the answer, choose `Needs work`, `Getting there`, or `Confident`, and continue through the session. Confidence and practice counts are persisted by the backend. Later sessions prioritize unpracticed and weaker cards. Space/Enter reveals a card and keys 1, 2, and 3 record confidence after reveal.
+
+### Responsive and accessible behavior
+
+The UI uses responsive grid and flex layouts for phone and laptop widths, native form controls, semantic headings, `role="status"` loading states, `role="alert"` errors, disabled states, focus-visible outlines, and keyboard handling in practice mode. There is no separate automated browser test suite in this repository; domain and API behavior is tested in the backend repository.
+
+## Architecture
+
+```text
+src/
+  app/
+    (site)/                 App Router pages and protected workflows
+  components/
+    layout/                 Header, shell, and shared application chrome
+  features/
+    auth/                   AuthProvider, forms, and route protection
+    kits/                   Kit creation and builder interactions
+  lib/
+    api/                    Typed HTTP client and kit/health requests
+    env.ts                  Browser-safe API base URL resolution
+    uiCopy.ts               API error presentation text
+  types/
+    api.ts                  Frontend copies of API-facing data contracts
+```
+
+`AuthProvider` owns session state. `RequireAuth` protects client routes. `src/lib/api/client.ts` is the only reusable HTTP boundary and sends `credentials: "include"` for cross-origin cookies. The frontend does not access MongoDB, the LLM, crawlers, retrieval, coverage logic, scheduling logic, or evaluator code.
+
+## Local Setup
 
 ```bash
+git clone https://github.com/darsh1125/prepforge-frontend.git
 cd prepforge-frontend
+npm ci
+```
+
+Create `.env.local` from `.env.example`:
+
+Windows:
+
+```powershell
+copy .env.example .env.local
+```
+
+macOS/Linux:
+
+```bash
 cp .env.example .env.local
-npm install
+```
+
+Set:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+Run the frontend:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-Run the backend in another terminal (`cd prepforge-backend && npm run dev`) so `GET http://localhost:5000/health` is available.
-
-## Environment variables
-
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_API_URL` | Backend origin, e.g. `http://localhost:5000` |
-
-Only browser-safe values belong in `NEXT_PUBLIC_*`. Never put MongoDB URIs, session secrets, or LLM keys here.
+Open http://localhost:3000. Run the backend separately on port 5000. `NEXT_PUBLIC_API_URL` is the backend origin without a trailing slash; it is the only frontend environment variable required.
 
 ## Commands
 
 ```bash
 npm run dev
-npm run build
-npm run start
 npm run lint
 npm run typecheck
+npm run build
+npm run start
 ```
 
-UI tests are not configured in Prompt 1. Domain tests live in the backend repo.
+## Deployment
 
-## Architecture
+Deploy this repository as a Next.js site on Netlify. Set this production environment variable in Netlify:
 
-```
-src/
-  app/            routes: /, /dashboard, /kits/new
-  components/     shared layout
-  features/kits   kit creation placeholder
-  lib/api         reusable HTTP client
-  types/api.ts    API-facing Appendix A types
+```env
+NEXT_PUBLIC_API_URL=https://prepforge-backend-pha6.onrender.com
 ```
 
-The API client (`src/lib/api/client.ts`) reads `NEXT_PUBLIC_API_URL`, sends JSON, includes cookies (`credentials: "include"`) for cross-origin auth, and surfaces structured errors. Do not scatter raw `fetch` calls.
+Do not place `MONGODB_URI`, `SESSION_SECRET`, `LLM_API_KEY`, or `SEARCH_API_KEY` in the frontend environment. Those belong only in the backend host configuration. The backend must set `WEB_ORIGIN=https://prepforge-frontend.netlify.app` and allow credentialed requests from that exact origin.
 
-Frontend must not contain MongoDB access, LLM secrets, crawlers, extraction, coverage, scheduling, or the CLI evaluator.
+## Known Limitations
 
-## Current implementation status (Prompt 16)
-
-Implemented:
-
-- App shell with authenticated navigation
-- Typed API client + health check
-- Appendix A TypeScript types (API-facing copies)
-- HTTP-only cookie auth with login, registration, logout, and session restoration
-- Protected dashboard, kit creation, and kit detail pages
-- User-scoped kit creation, listing, viewing, and deletion UI
-- Kit detail research action with public interview source links, counts, and warning states
-- Kit detail role analysis with title, seniority, responsibilities, and labeled JD requirements
-- Kit detail generated questions grouped by category with difficulty and requirement references
-- Kit detail deterministic coverage display with uncovered requirement warnings and pass counts
-- Flashcard generation action and grounded flashcard display
-- Deterministic study schedule action with exact-day rendering, focus, minutes, and question IDs
-- One-click Generate Prep Kit action with staged progress and backend polling
-- Refresh-safe active generation state, warnings, failure messaging, and retry action
-- Local-draft Kit Builder for company brief, questions, flashcards, pinning, add/delete, category/difficulty/reference edits, and question reorder
-- Explicit Save/Cancel controls; no API request is made per keystroke
-- Revision-aware builder refresh with conflict/error feedback and deterministic coverage/schedule state display
-
-Not implemented in the frontend:
-
-- The batch evaluator remains a backend-only CLI by design.
-
-Flashcards and schedules use separate protected API actions, while Generate Prep Kit starts the canonical backend pipeline. The detail page polls every two seconds during active generation, reconstructs state after refresh, renders aggregated warnings, and exposes retry after failure. Flashcard errors are shown without removing existing content; schedule errors preserve flashcards and prior kit data. The UI renders every returned schedule day, including repeated review days for long study windows.
-
-Builder saves send one explicit mutation after the user confirms an edit. The backend returns the complete updated builder state and revision, so the page replaces local state atomically and can recover after refresh.
-
-Section regeneration controls are available beside the builder: company brief, each question category, and deterministic schedule rebuild. Confirmation copy explains that edited, pinned, and user-created questions survive category replacement. Regeneration shows a section-level loading state, keeps the prior UI until the server responds, surfaces provider or revision-conflict errors, and applies the returned coverage/schedule state without touching other categories. Schedule rebuild uses the revision-aware deterministic endpoint and does not invoke an LLM.
-
-Flashcard practice is available at `/kits/[id]/practice` and from the kit detail page. It presents one front at a time, reveals the answer on demand, then saves `Needs work`, `Getting there`, or `Confident` before advancing. Progress, practice stats, completion, empty state, requirement context, and keyboard shortcuts are included. A later session is rebuilt from persisted confidence, so weak and unpracticed cards appear first. The route uses session/local component state only for the current reveal/index; confidence history is persisted by the backend.
-
-Product flow: Create -> Generate -> Review/Edit -> Regenerate -> Practice -> Follow the schedule. The interface uses human-readable generation stages and error copy, explicit empty/loading/error states, responsive layouts, and credentialed API requests. The backend remains the source of truth for ownership, revisions, practice history, coverage, and schedules.
-
-## Deployment note
-
-Frontend and backend deploy on different origins. CORS on the backend must allow this frontend origin; cookies will require that setup. This app already sends credentials on API requests.
-
-For a production build, set `NEXT_PUBLIC_API_URL` to the backend origin without a trailing slash, run `npm ci`, `npm run build`, and start with `npm start`. The backend must be deployed separately with `WEB_ORIGIN` set to the exact frontend origin. Keep provider keys, database credentials, and session secrets in backend hosting environment settings only.
+- Public interview research is optional and can produce warnings when no search key is configured or sources cannot be fetched.
+- Render free-tier cold starts can make the first API request slow.
+- There is no frontend end-to-end test runner in this repository.
+- The batch evaluator is intentionally backend-only and is documented in the backend README.
