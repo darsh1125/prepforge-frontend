@@ -89,6 +89,18 @@ main section select {
   border-radius: .625rem;
   background: white;
 }
+
+main section label {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  line-height: 1.4;
+}
+
+main section label textarea {
+  margin-top: 0;
+  line-height: 1.6;
+}
 main section input:not([type="checkbox"]):focus,
 main section textarea:focus,
 main section select:focus {
